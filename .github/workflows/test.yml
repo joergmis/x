@@ -1,0 +1,13 @@
+name: Test
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+      - uses: dominikh/staticcheck-action@v1
+      - run: for dir in ./*/; do go test ./...; done
+      - run: for dir in ./*/; do go build ./...; done
