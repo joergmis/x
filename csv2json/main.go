@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"encoding/csv"
+	"encoding/json"
 	"flag"
 	"log"
 	"os"
@@ -48,7 +49,13 @@ func main() {
 		log.Fatal(err)
 	}
 
-	if err := os.WriteFile(strings.ReplaceAll(*infile, ".csv", ".json"), out.Bytes(), 0644); err != nil {
+	rawJson := json.RawMessage(out.Bytes())
+	b, err := json.MarshalIndent(&rawJson, "", "\t")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if err := os.WriteFile(strings.ReplaceAll(*infile, ".csv", ".json"), b, 0644); err != nil {
 		log.Fatal(err)
 	}
 }
@@ -59,7 +66,7 @@ var tmpl = `[
 	{{ if not $first }},{{ else }}{{ $first = false }}{{ end }}{
 	{{ $firstItem := true }}
 	{{ range $key, $value := . }}
-	{{ if not $firstItem }}, {{ else }} {{ $firstItem = false }} {{ end }}
+	{{ if not $firstItem }},{{ else }}{{ $firstItem = false }}{{ end }}
 	"{{ $key }}": "{{ $value }}"
 	{{ end }}
 	}
