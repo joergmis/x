@@ -44,7 +44,6 @@ func main() {
 	}
 
 	var out bytes.Buffer
-
 	if err := tpl.Execute(&out, struct{ Items []map[string]string }{Items: items}); err != nil {
 		log.Fatal(err)
 	}
@@ -55,9 +54,14 @@ func main() {
 }
 
 var tmpl = `[
-	{{ range .Items }}{
-	{{ range $key, $value := . }}"{{ $key }}": "{{ $value }}",
+	{{ $first := true }}
+	{{ range .Items }}
+	{{ if not $first }},{{ else }}{{ $first = false }}{{ end }}{
+	{{ $firstItem := true }}
+	{{ range $key, $value := . }}
+	{{ if not $firstItem }}, {{ else }} {{ $firstItem = false }} {{ end }}
+	"{{ $key }}": "{{ $value }}"
 	{{ end }}
-	},
+	}
 	{{ end }}
 ]`
