@@ -34,6 +34,7 @@ func main() {
 
 		for i, key := range keys {
 			object[key] = strings.ReplaceAll(item[i], "\"", "'")
+			object[key] = strings.ReplaceAll(object[key], "\n", "")
 		}
 
 		items = append(items, object)
