@@ -5,6 +5,7 @@ import (
 	"encoding/csv"
 	"encoding/json"
 	"flag"
+	"io"
 	"log"
 	"os"
 	"strings"
@@ -74,7 +75,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	if err := os.WriteFile(strings.ReplaceAll(*infile, ".csv", ".json"), b, 0644); err != nil {
+	if _, err := io.Copy(os.Stdout, bytes.NewBuffer(b)); err != nil {
 		log.Fatal(err)
 	}
 }
