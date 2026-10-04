@@ -11,6 +11,18 @@ import (
 	"text/template"
 )
 
+type replacement struct {
+	orig string
+	new  string
+}
+
+var (
+	replacements = []replacement{
+		{"\t", " "},
+		{"•", ""},
+	}
+)
+
 func main() {
 	infile := flag.String("in", "", "path to the csv file")
 	flag.Parse()
@@ -20,7 +32,13 @@ func main() {
 		log.Fatal(err)
 	}
 
-	reader := csv.NewReader(bytes.NewBuffer(raw))
+	// handle all special characters since there isn't necessarily any escaping
+	rawData := string(raw)
+	for _, data := range replacements {
+		rawData = strings.ReplaceAll(rawData, data.orig, data.new)
+	}
+
+	reader := csv.NewReader(bytes.NewBufferString(rawData))
 	data, err := reader.ReadAll()
 	if err != nil {
 		log.Fatal(err)
